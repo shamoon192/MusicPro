@@ -25,6 +25,6 @@ Java_com_shamoon_musicpro_data_CHandler_getAPIAppName(JNIEnv *env, jobject thiz)
 JNIEXPORT jstring JNICALL
 Java_com_shamoon_musicpro_data_CHandler_getAPIURL(JNIEnv *env, jobject thiz) {
     // http://ws.audioscrobbler.com/2.0/
-    std::string url = "http://ws.audioscrobbler.com/2.0/";
+    std::string url = "http://ws.audioscrobbler.com/";
     return env->NewStringUTF(url.c_str());
 }
