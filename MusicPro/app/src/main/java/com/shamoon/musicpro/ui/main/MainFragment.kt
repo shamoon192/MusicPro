@@ -10,11 +10,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.shamoon.musicpro.R
 import com.shamoon.musicpro.data.types.SearchItemType
 import com.shamoon.musicpro.data.types.SearchListItem
 import com.shamoon.musicpro.databinding.MainFragmentBinding
+import com.shamoon.musicpro.ui.GetInfoListener
 
 
 class MainFragment : Fragment() {
@@ -26,9 +26,12 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: MainFragmentBinding
     private lateinit var mListener: SearchFragmentListener
+    private lateinit var getInfoListener: GetInfoListener
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.main_fragment, container, false)
         activity!!.title = "Search"
         return binding.root
@@ -66,9 +69,9 @@ class MainFragment : Fragment() {
                     SearchItemType.SEARCH_BY_ARTIST -> mListener.onArtistSearchClick(item.query.toString())
                     SearchItemType.SEARCH_BY_SONG -> mListener.onSongSearchClick(item.query.toString())
                     SearchItemType.SEARCH_BY_ALBUM -> mListener.onAlbumSearchClick(item.query.toString())
-                    SearchItemType.ALBUM -> mListener.onAlbumInfoClick(item.album!!.mbid.toString())
-                    SearchItemType.ARTIST -> mListener.onArtistInfoClick(item.artist!!.mbid.toString())
-                    SearchItemType.SONG -> mListener.onSongInfoClick(item.song!!.mbid.toString())
+                    SearchItemType.ALBUM -> item.album?.let { getInfoListener.onAlbumInfoClick(it) }
+                    SearchItemType.ARTIST -> item.artist?.let { getInfoListener.onArtistInfoClick(it) }
+                    SearchItemType.SONG -> item.song?.let { getInfoListener.onSongInfoClick(it) }
                 }
             }
         }
@@ -80,16 +83,15 @@ class MainFragment : Fragment() {
         if (context is SearchFragmentListener) {
             mListener = context as SearchFragmentListener
         }
+        if (context is GetInfoListener) {
+            getInfoListener = context as GetInfoListener
+        }
     }
 
     interface SearchFragmentListener {
         fun onAlbumSearchClick(name: String)
         fun onSongSearchClick(name: String)
         fun onArtistSearchClick(name: String)
-
-        fun onAlbumInfoClick(albumId: String)
-        fun onSongInfoClick(songId: String)
-        fun onArtistInfoClick(artistId: String)
     }
 
 }

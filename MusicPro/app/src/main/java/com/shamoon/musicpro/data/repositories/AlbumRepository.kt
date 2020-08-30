@@ -5,31 +5,25 @@ import androidx.lifecycle.MutableLiveData
 import com.shamoon.musicpro.controller.service.ApiInterface
 import com.shamoon.musicpro.controller.service.RetrofitService
 import com.shamoon.musicpro.data.CHandler
+import com.shamoon.musicpro.data.api_model.Album
 import com.shamoon.musicpro.data.api_model.SearchResponse
+import com.shamoon.musicpro.data.types.SearchListItem
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
 class AlbumRepository() {
-    private final val TAG: String = this.javaClass.simpleName
-    private lateinit var albumRepository: AlbumRepository
-
-
-    fun getInstance(): AlbumRepository? {
-        if (albumRepository == null) {
-            albumRepository = AlbumRepository()
-        }
-        return albumRepository
+    private val albumList: ArrayList<Album> = ArrayList()
+    val albums: MutableLiveData<ArrayList<Album>> by lazy {
+        MutableLiveData<ArrayList<Album>>()
     }
 
-   /* fun getAlbums(album: String): MutableLiveData<SearchResponse> {
-        val albumData = MutableLiveData<SearchResponse>()
-        apiInterface.search("album.search", null, CHandler().getAPIKey(), "json", album, null, 3)
-            ?.enqueue(object : Callback<SearchResponse?> {
+    fun getAlbums(album: String) {
+        val callback: Callback<SearchResponse?> =
+            object : Callback<SearchResponse?> {
                 override fun onFailure(call: Call<SearchResponse?>, t: Throwable) {
-                    t.message?.let { Log.d(TAG, it) }
-                    albumData.value = null
+                    Log.e("Album", t.message, t)
                 }
 
                 override fun onResponse(
@@ -37,12 +31,13 @@ class AlbumRepository() {
                     response: Response<SearchResponse?>
                 ) {
                     if (response.isSuccessful){
-                        albumData.value = response.body()
+                        val body: SearchResponse? = response.body()
+                        albums.setValue(body!!.results!!.albummatches!!.album as ArrayList<Album>?)
                     }
                 }
 
             }
-            )
-        return albumData
-    }*/
+
+        RetrofitService().getApi()!!.search("album.search", null, CHandler().getAPIKey(), "json", album, null, 20)!!.enqueue(callback)
+    }
 }

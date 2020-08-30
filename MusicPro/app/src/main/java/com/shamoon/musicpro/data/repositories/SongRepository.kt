@@ -6,28 +6,22 @@ import com.shamoon.musicpro.controller.service.ApiInterface
 import com.shamoon.musicpro.controller.service.RetrofitService
 import com.shamoon.musicpro.data.CHandler
 import com.shamoon.musicpro.data.api_model.SearchResponse
+import com.shamoon.musicpro.data.api_model.Track
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class SongRepository {
-    private final val TAG: String = this.javaClass.simpleName
-    private lateinit var songRepository: SongRepository
-
-    fun getInstance(): SongRepository? {
-        if (songRepository == null) {
-            songRepository = SongRepository()
-        }
-        return songRepository
+    private val songList: ArrayList<Track> = ArrayList()
+    val songs: MutableLiveData<ArrayList<Track>> by lazy {
+        MutableLiveData<ArrayList<Track>>()
     }
 
-   /* fun getSongs(song: String): MutableLiveData<SearchResponse> {
-        val songData = MutableLiveData<SearchResponse>()
-        apiInterface.search("track.search", null, CHandler().getAPIKey(), "json", song, null, 3)
-            ?.enqueue(object : Callback<SearchResponse?> {
+    fun getSongs(song: String) {
+        val callback: Callback<SearchResponse?> =
+            object : Callback<SearchResponse?> {
                 override fun onFailure(call: Call<SearchResponse?>, t: Throwable) {
-                    t.message?.let { Log.d(TAG, it) }
-                    songData.value = null
+                    Log.e("Track", t.message, t)
                 }
 
                 override fun onResponse(
@@ -35,12 +29,13 @@ class SongRepository {
                     response: Response<SearchResponse?>
                 ) {
                     if (response.isSuccessful){
-                        songData.value = response.body()
+                        val body: SearchResponse? = response.body()
+                        songs.value = body!!.results!!.trackmatches!!.track as ArrayList<Track>?
                     }
                 }
 
             }
-            )
-        return songData
-    }*/
+
+        RetrofitService().getApi()!!.search("track.search", null, CHandler().getAPIKey(), "json", null, song, 20)!!.enqueue(callback)
+    }
 }

@@ -2,8 +2,9 @@ package com.shamoon.musicpro.data.api_model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class Artist {
+class Artist: Serializable {
     @SerializedName("image")
     @Expose
     var image: List<Image__>? = null
