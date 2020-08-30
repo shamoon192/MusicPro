@@ -3,9 +3,17 @@ package com.shamoon.musicpro
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.shamoon.musicpro.data.api_model.Album
+import com.shamoon.musicpro.data.api_model.Artist
+import com.shamoon.musicpro.data.api_model.Track
+import com.shamoon.musicpro.ui.GetInfoListener
+import com.shamoon.musicpro.ui.album_search.SearchByAlbumFragment
+import com.shamoon.musicpro.ui.artist_search.SearchByArtistFragment
+import com.shamoon.musicpro.ui.info.InfoFragment
 import com.shamoon.musicpro.ui.main.MainFragment
+import com.shamoon.musicpro.ui.song_search.SearchBySongFragment
 
-class MainActivity : AppCompatActivity(), MainFragment.SearchFragmentListener {
+class MainActivity : AppCompatActivity(), MainFragment.SearchFragmentListener, GetInfoListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,26 +26,47 @@ class MainActivity : AppCompatActivity(), MainFragment.SearchFragmentListener {
     }
 
     override fun onAlbumSearchClick(name: String) {
-        Toast.makeText(this, "onAlbumSearchClick", Toast.LENGTH_SHORT).show()
+        //from here I will go to next list of recipes
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, SearchByAlbumFragment.newInstance(name))
+            .addToBackStack(SearchByAlbumFragment::class.java.simpleName)
+            .commit()
     }
 
     override fun onSongSearchClick(name: String) {
-        Toast.makeText(this, "onSongSearchClick", Toast.LENGTH_SHORT).show()
+        //from here I will go to next list of recipes
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, SearchBySongFragment.newInstance(name))
+            .addToBackStack(SearchByAlbumFragment::class.java.simpleName)
+            .commit()
     }
 
     override fun onArtistSearchClick(name: String) {
-        Toast.makeText(this, "onArtistSearchClick", Toast.LENGTH_SHORT).show()
+        //from here I will go to next list of recipes
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, SearchByArtistFragment.newInstance(name))
+            .addToBackStack(SearchByAlbumFragment::class.java.simpleName)
+            .commit()
     }
 
-    override fun onAlbumInfoClick(albumId: String) {
-        Toast.makeText(this, "onAlbumInfoClick", Toast.LENGTH_SHORT).show()
+    override fun onAlbumInfoClick(album: Album) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, InfoFragment.newInstance(album))
+            .addToBackStack(SearchByAlbumFragment::class.java.simpleName)
+            .commit()
     }
 
-    override fun onSongInfoClick(songId: String) {
-        Toast.makeText(this, "onSongInfoClick", Toast.LENGTH_SHORT).show()
+    override fun onSongInfoClick(song: Track) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, InfoFragment.newInstance(song))
+            .addToBackStack(SearchByAlbumFragment::class.java.simpleName)
+            .commit()
     }
 
-    override fun onArtistInfoClick(artistId: String) {
-        Toast.makeText(this, "onArtistInfoClick", Toast.LENGTH_SHORT).show()
+    override fun onArtistInfoClick(artist: Artist) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, InfoFragment.newInstance(artist))
+            .addToBackStack(SearchByAlbumFragment::class.java.simpleName)
+            .commit()
     }
 }
